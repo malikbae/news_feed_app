@@ -12,10 +12,13 @@ import 'package:news_feed_app/pages/category_news.dart';
 import 'package:news_feed_app/services/data.dart';
 import 'package:news_feed_app/services/news.dart';
 import 'package:news_feed_app/services/slider_data.dart';
+import 'package:news_feed_app/widgets/bottom_nav_bar.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
+
+  static const routeName = '/';
 
   @override
   State<Home> createState() => _HomeState();
@@ -70,6 +73,7 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         elevation: 0.0,
       ),
+      bottomNavigationBar: const BottomNavBar(index: 0),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(

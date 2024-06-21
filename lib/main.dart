@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:news_feed_app/pages/home.dart';
 import 'package:news_feed_app/pages/landing_page.dart';
+import 'package:news_feed_app/pages/search.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +35,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      home: const LandingPage(),
+      initialRoute: '/',
+      routes: {
+        Home.routeName: (context) => const Home(),
+        Search.routeName: (context) => const Search(),
+      },
     );
   }
 }
