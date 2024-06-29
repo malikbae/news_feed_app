@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:news_feed_app/models/search_model.dart';
-import 'package:news_feed_app/models/show_category.dart';
 
 class SearchNewsData {
   List<SearchNewsModel> searchNews = [];

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:news_feed_app/models/article_model.dart';
+import 'package:news_feed_app/models/search_model.dart';
 import 'package:news_feed_app/models/show_category.dart';
+import 'package:news_feed_app/pages/article_news.dart';
 import 'package:news_feed_app/services/news.dart';
+import 'package:news_feed_app/services/search_news.dart';
 import 'package:news_feed_app/services/show_category_news.dart';
 import 'package:news_feed_app/widgets/bottom_nav_bar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,16 +12,20 @@ import 'package:cached_network_image/cached_network_image.dart';
 class Search extends StatefulWidget {
   const Search({super.key});
 
-  static const routeName = '/search';
+  static const routeName = '/';
 
   @override
   State<Search> createState() => _SearchState();
 }
 
 class _SearchState extends State<Search> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchKeyword = "papua"; // default keyword
+
   @override
   Widget build(BuildContext context) {
     List<String> tabs = [
+      "Pencarian",
       "Politik",
       "Hukum",
       "Ekonomi",
@@ -39,26 +46,63 @@ class _SearchState extends State<Search> {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: const Row(
+          title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Flutter"),
-              Text(
-                "News",
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              )
+              Image.asset(
+                'assets/images/logo-nama.png',
+                height: 40.0,
+              ),
             ],
           ),
           centerTitle: true,
           elevation: 0.0,
         ),
         bottomNavigationBar: const BottomNavBar(index: 1),
-        body: ListView(
+        body: Column(
           children: [
-            const _SearchNews(),
+            _SearchNews(
+              searchController: _searchController,
+              onSearch: (keyword) {
+                setState(() {
+                  _searchKeyword = keyword;
+                });
+              },
+            ),
             SizedBox(height: 20.0),
-            _CategoryNews(tabs: tabs),
+            Container(
+              padding:
+                  const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
+              child: TabBar(
+                tabAlignment: TabAlignment.start,
+                indicatorColor: Colors.blue,
+                isScrollable: true,
+                tabs: tabs
+                    .map(
+                      (tab) => Tab(
+                        icon: Text(
+                          tab,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                children: tabs.map((tab) {
+                  if (tab == "Pencarian") {
+                    return _SearchResultNews(searchKeyword: _searchKeyword);
+                  } else {
+                    return _CategoryNews(category: tab.toLowerCase());
+                  }
+                }).toList(),
+              ),
+            ),
           ],
         ),
       ),
@@ -67,8 +111,8 @@ class _SearchState extends State<Search> {
 }
 
 class _CategoryNews extends StatelessWidget {
-  const _CategoryNews({super.key, required this.tabs});
-  final List<String> tabs;
+  const _CategoryNews({super.key, required this.category});
+  final String category;
 
   Future<List<ShowCategoryModel>> fetchArticles(String category) async {
     ShowCategoryNews showCategoryNews = ShowCategoryNews();
@@ -78,71 +122,81 @@ class _CategoryNews extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
-          child: TabBar(
-            tabAlignment: TabAlignment.start,
-            indicatorColor: Colors.blue,
-            isScrollable: true,
-            tabs: tabs
-                .map(
-                  (tab) => Tab(
-                    icon: Text(
-                      tab,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: TabBarView(
-            children: tabs
-                .map(
-                  (tab) => FutureBuilder<List<ShowCategoryModel>>(
-                    future: fetchArticles(tab.toLowerCase()),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(child: Text('No articles found'));
-                      } else {
-                        List<ShowCategoryModel> articles = snapshot.data!;
-                        return ListView.builder(
-                          physics: const ClampingScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: articles.length,
-                          itemBuilder: ((context, index) {
-                            return BlogTile(
-                                link: articles[index].link!,
-                                image: articles[index].image!,
-                                title: articles[index].title!,
-                                description: articles[index].description!);
-                          }),
-                        );
-                      }
-                    },
-                  ),
-                )
-                .toList(),
-          ),
-        )
-      ],
+    return FutureBuilder<List<ShowCategoryModel>>(
+      future: fetchArticles(category),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('Tidak ada artikel'));
+        } else {
+          List<ShowCategoryModel> articles = snapshot.data!;
+          return ListView.builder(
+            physics: const ClampingScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: articles.length,
+            itemBuilder: ((context, index) {
+              return BlogTile(
+                  link: articles[index].link!,
+                  image: articles[index].image!,
+                  title: articles[index].title!,
+                  description: articles[index].description!);
+            }),
+          );
+        }
+      },
+    );
+  }
+}
+
+class _SearchResultNews extends StatelessWidget {
+  final String searchKeyword;
+  const _SearchResultNews({super.key, required this.searchKeyword});
+
+  Future<List<SearchNewsModel>> fetchArticles(String search) async {
+    SearchNewsData searchNewsData = SearchNewsData();
+    await searchNewsData.getSearchNews(search);
+    return searchNewsData.searchNews;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<SearchNewsModel>>(
+      future: fetchArticles(searchKeyword),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('Tidak ada artikel'));
+        } else {
+          List<SearchNewsModel> articles = snapshot.data!;
+          return ListView.builder(
+            physics: const ClampingScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: articles.length,
+            itemBuilder: ((context, index) {
+              return BlogTile(
+                  link: articles[index].link!,
+                  image: articles[index].image!,
+                  title: articles[index].title!,
+                  description: articles[index].description!);
+            }),
+          );
+        }
+      },
     );
   }
 }
 
 class _SearchNews extends StatelessWidget {
-  const _SearchNews({super.key});
+  final TextEditingController searchController;
+  final ValueChanged<String> onSearch;
+  const _SearchNews(
+      {super.key, required this.searchController, required this.onSearch});
 
   @override
   Widget build(BuildContext context) {
@@ -173,6 +227,7 @@ class _SearchNews extends StatelessWidget {
               height: 20.0,
             ),
             TextFormField(
+              controller: searchController,
               decoration: InputDecoration(
                 hintText: "Cari",
                 fillColor: Colors.grey.shade200,
@@ -185,6 +240,7 @@ class _SearchNews extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20.0),
                     borderSide: BorderSide.none),
               ),
+              onFieldSubmitted: onSearch,
             )
           ],
         ),
@@ -266,24 +322,6 @@ class BlogTile extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class ArticleView extends StatelessWidget {
-  final String blogUrl;
-  const ArticleView({super.key, required this.blogUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    // Implement the ArticleView page to display article details.
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Article'),
-      ),
-      body: Center(
-        child: Text('Article details for URL: $blogUrl'),
       ),
     );
   }

@@ -18,14 +18,13 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 class Home extends StatefulWidget {
   const Home({super.key});
 
-  static const routeName = '/';
+  static const routeName = '/home';
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  List<CategoryModel> categories = [];
   List<SliderModel> sliders = [];
   List<ArticleModel> articles = [];
   bool _loading = true;
@@ -34,7 +33,6 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    categories = getCategories();
     getSlider();
     getNews();
     super.initState();
@@ -60,14 +58,13 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Row(
+        title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Flutter"),
-            Text(
-              "News",
-              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-            )
+            Image.asset(
+              'assets/images/logo-nama.png',
+              height: 40.0,
+            ),
           ],
         ),
         centerTitle: true,
@@ -81,22 +78,7 @@ class _HomeState extends State<Home> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 10.0),
-                      height: 80,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: categories.length,
-                        itemBuilder: (context, index) {
-                          return CategoryTile(
-                            image: categories[index].image,
-                            categoryName: categories[index].categoryName,
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 30.0),
+                    const SizedBox(height: 20.0),
                     Padding(
                       padding: EdgeInsets.only(left: 10.0, right: 10.0),
                       child: Row(
@@ -136,8 +118,6 @@ class _HomeState extends State<Home> {
                         options: CarouselOptions(
                             height: 250,
                             autoPlay: true,
-                            enlargeCenterPage: true,
-                            enlargeStrategy: CenterPageEnlargeStrategy.height,
                             onPageChanged: (index, reason) {
                               setState(() {
                                 activeIndex = index;
@@ -249,55 +229,6 @@ class _HomeState extends State<Home> {
         effect: const SlideEffect(
             dotWidth: 8.0, dotHeight: 8.0, activeDotColor: Colors.blue),
       );
-}
-
-class CategoryTile extends StatelessWidget {
-  final dynamic image, categoryName;
-  const CategoryTile({super.key, this.image, this.categoryName});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => CategoryNews(name: categoryName)));
-      },
-      child: Container(
-        margin: const EdgeInsets.only(right: 16),
-        child: Stack(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: Image.asset(
-                image,
-                width: 120,
-                height: 80,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Container(
-              width: 120,
-              height: 80,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                  color: Colors.black26),
-              child: Center(
-                child: Text(
-                  categoryName,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class BlogTile extends StatelessWidget {
