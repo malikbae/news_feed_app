@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:news_feed_app/pages/home.dart';
+import 'package:news_feed_app/pages/login.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -39,7 +40,7 @@ class _LandingPageState extends State<LandingPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Berita Hangat dari Indonesia untuk Anda",
+                        "Selamat Datang di Negeri Berita",
                         style: TextStyle(
                             color: Colors.black,
                             fontSize: 28.0,
@@ -59,7 +60,7 @@ class _LandingPageState extends State<LandingPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Home()),
+                                builder: (context) => const LoginScreen()),
                           );
                         },
                         child: Center(
@@ -77,7 +78,7 @@ class _LandingPageState extends State<LandingPage> {
                                     borderRadius: BorderRadius.circular(30)),
                                 child: const Center(
                                   child: Text(
-                                    "Get Started",
+                                    "Mulai Sekarang",
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 17.0,

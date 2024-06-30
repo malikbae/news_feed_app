@@ -43,7 +43,7 @@ class _AllNewsState extends State<AllNews> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         title: Text(
           "Berita " + widget.news,
           style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),

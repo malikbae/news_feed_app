@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_feed_app/pages/home.dart';
+import 'package:news_feed_app/pages/profile.dart';
 import 'package:news_feed_app/pages/search.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -24,7 +25,8 @@ class BottomNavBar extends StatelessWidget {
             margin: const EdgeInsets.only(left: 50),
             child: IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, Home.routeName);
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Home()));
               },
               icon: const Icon(Icons.home),
             ),
@@ -34,7 +36,8 @@ class BottomNavBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, Search.routeName);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const Search()));
             },
             icon: const Icon(Icons.search),
           ),
@@ -45,7 +48,8 @@ class BottomNavBar extends StatelessWidget {
             margin: const EdgeInsets.only(right: 50),
             child: IconButton(
               onPressed: () {
-                print('No profile screen yet');
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Profile()));
               },
               icon: const Icon(Icons.person),
             ),

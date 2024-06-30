@@ -21,16 +21,15 @@ class _ArticleViewState extends State<ArticleView> {
           Column(
             children: [
               AppBar(
-                automaticallyImplyLeading: false,
-                title: const Row(
+                automaticallyImplyLeading: true,
+                title: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text("Flutter"),
-                    Text(
-                      "News",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    )
+                    Image.asset(
+                      'assets/images/logo-nama.png',
+                      height: 40.0,
+                    ),
                   ],
                 ),
                 centerTitle: true,
